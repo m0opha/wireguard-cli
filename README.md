@@ -6,7 +6,6 @@ Este proyecto tiene como objetivo simplificar la configuración y administració
 - Automatización de la configuración del servidor WireGuard.
 - Creación sencilla de perfiles de clientes.
 - Gestión centralizada de la seguridad y la privacidad de la red.
-- [Otras características y ventajas del proyecto...]
 
 ## Uso
 
