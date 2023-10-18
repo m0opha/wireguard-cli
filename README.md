@@ -12,5 +12,17 @@ Este proyecto tiene como objetivo simplificar la configuración y administració
 
 Para comenzar con la configuración del servidor WireGuard y la creación de clientes, ejecuta el siguiente script:
 
-```bash
-scripts/setup.sh
+<!--sec data-title="Your first command: OS X and Linux" data-id="OSX_Linux_whoami" data-collapse=true ces-->
+
+    #start
+    scripts/setup.sh
+
+    #add client
+    scripts/add_client.sh "client-name"
+
+    #delete client
+    scripts/del_client.sh "client-name"
+    
+<!--endsec-->
+
+
