@@ -16,8 +16,8 @@ remoteip_path="$root/config/remoteip"
 
 
 #script paths
-setting_range_ip_path="$root/scripts/python_scripts/SettingRangeIp.py"
-setting_dns_path="$root/scripts/python_scripts/SettingDns.py"
+setting_range_ip_path="./python_scripts/SettingRangeIp.py"
+setting_dns_path="./python_scripts/SettingDns.py"
 
 
 #if config path not exite make it
@@ -77,7 +77,6 @@ else
 
     fi
 fi
-
 
 #load or create keys
 if [ ! -e $server_root/keys ]; then
