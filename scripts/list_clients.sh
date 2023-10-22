@@ -3,5 +3,7 @@ root="/etc/wireguard"
 devices_path="$root/devices"
 
 for _client in $(ls $devices_path); do
-        echo -e " \e[1;31m[+] $_client"
+        if [ "$_client" != "server" ]; then
+                echo -e " \e[1;32m[+] $_client"
+        fi
 done
