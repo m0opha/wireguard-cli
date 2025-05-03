@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Paso 1: Actualizar y actualizar el sistema
+# Paso 1: Actualizar el sistema
 echo "[*] Actualizando y mejorando el sistema..."
 sudo apt update && sudo apt upgrade -y
 
