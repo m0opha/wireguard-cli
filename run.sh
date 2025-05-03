@@ -62,9 +62,8 @@ fi
 
 echo "[+] ¡Todo listo! WireGuard y configuraciones de firewall instaladas correctamente."
 
-<----------->
 virtualenv .env
 source .env/bin/activate
-pip install pyinstaller, pillow, qrcode
+pip install pyinstaller pillow qrcode
 python3 wireguard-cli.py
 deactivate
