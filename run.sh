@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Paso 1: Actualizar el sistema
-echo "[*] Actualizando y mejorando el sistema..."
+echo "[*] Actualizando el sistema..."
 sudo apt update && sudo apt upgrade -y
 
 # Paso 2: Instalar paquetes necesarios
