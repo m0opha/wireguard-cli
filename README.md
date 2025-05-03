@@ -15,5 +15,6 @@ Clona el repositorio en tu máquina local:
 git clone https://github.com/m0opha/wireguard-cli
 cd wireguard-cli
 chmod +x run.sh
+sudo -s
 ./run.sh
 
