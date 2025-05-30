@@ -52,7 +52,6 @@ echo "[+] iptables está disponible."
 
 echo "[+] ¡Todo listo! WireGuard y configuraciones de firewall instaladas correctamente."
 
-<----------->
 virtualenv .env
 source .env/bin/activate
 pip install pyinstaller pillow qrcode
