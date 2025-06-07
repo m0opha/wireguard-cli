@@ -5,23 +5,23 @@ sudo apt update && sudo apt upgrade -y
 
 
 echo "[*] Instalando WireGuard, python3-virtualenv, ufw, resolvconf, iptables..."
-sudo apt install -y wireguard python3-virtualenv ufw resolvconf iptables qrencode
+sudo apt install -y wireguard python3-virtualenv resolvconf iptables qrencode
 
 
-echo "[*] Abriendo puerto SSH en UFW..."
-sudo ufw allow 22/tcp
-
-
-echo "[*] Abriendo puerto Wireguard en UFW..."
-sudo ufw allow 51820/udp
-
-
-echo "[*] Habilitando UFW..."
-sudo ufw enable
-
-
-echo "[*] Verificando estado de UFW..."
-sudo ufw status verbose
+#echo "[*] Abriendo puerto SSH en UFW..."
+#sudo ufw allow 22/tcp
+#
+#
+#echo "[*] Abriendo puerto Wireguard en UFW..."
+#sudo ufw allow 51820/udp
+#
+#
+#echo "[*] Habilitando UFW..."
+#sudo ufw enable
+#
+#
+#echo "[*] Verificando estado de UFW..."
+#sudo ufw status verbose
 
 
 echo "[*] Verificando si WireGuard está instalado correctamente..."

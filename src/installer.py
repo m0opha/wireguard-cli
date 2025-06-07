@@ -15,7 +15,7 @@ from .modules.create_config_directory import createConfigDirectory
 from .modules.check_permissions import checkPermissions
 from .modules.load_credentials import loadCredentials
 from .modules.enable_ipforward import enableIpForward
-from .modules.start_wireguard import firstStartWireguard
+from .modules.wireguard_functions import firstStartWireguard
 
 from .interface.initialize_interface import initializeInterface
 

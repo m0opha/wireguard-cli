@@ -1,8 +1,6 @@
 import subprocess
 
-def firstStartWireguard():
-    print("[*] Levantando el servidor WireGuard...")
-
+def startWireguard():
     # Intentar levantar la interfaz
     wg_quick = subprocess.run(["wg-quick", "up", "wg0"], capture_output=True, text=True)
     if wg_quick.returncode != 0:
@@ -10,11 +8,16 @@ def firstStartWireguard():
         print(wg_quick.stderr.strip())
         return False
 
-    print("[+] Interfaz wg0 levantada correctamente.")
 
+def firstStartWireguard():
+    print("[*] Levantando el servidor WireGuard...")
+    startWireguard()
+    
+    print("[+] Interfaz wg0 levantada correctamente.")
     # Intentar habilitar el servicio para arranque automático
     print("[*] Habilitando inicio automático con systemd...")
     systemctl = subprocess.run(["systemctl", "enable", "wg-quick@wg0"], capture_output=True, text=True)
+
     if systemctl.returncode != 0:
         print("[!] Error al habilitar el servicio wg-quick@wg0:")
         print(systemctl.stderr.strip())
