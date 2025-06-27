@@ -1,0 +1,10 @@
+{
+    "range_ip": "",
+    "listen_port": "",
+    "remote_ip": "",
+    "PostUp": "",
+    "PostDown": "",
+    "dns": "",
+    "peers": "",
+    "interface": ""
+}
