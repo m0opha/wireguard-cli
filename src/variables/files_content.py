@@ -1,4 +1,4 @@
-{
+settings_content = {
     "range_ip": "",
     "listen_port": "",
     "remote_ip": "",
@@ -6,5 +6,7 @@
     "PostDown": "",
     "dns": "",
     "peers": "",
-    "interface": ""
+    "interface": "",
+    "allow_ips" : "",
+    "keep_alive" : ""
 }

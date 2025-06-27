@@ -1,0 +1,12 @@
+{
+  "range_ip": "",
+  "listen_port": "",
+  "remote_ip": "",
+  "post_up": "",
+  "post_down": "",
+  "dns": "",
+  "peers": "3",
+  "interface": "",
+  "allow_ips": "",
+  "keep_alive": ""
+}

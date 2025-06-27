@@ -12,6 +12,7 @@ _WIREGUARD_ROOT = "/etc/wireguard" if not debug else os.path.join(os.path.abspat
 
 #proyect paths
 _PROJECT_CONFIG_PATH = os.path.join(_WIREGUARD_ROOT, "configs")
+_SETTINGS_FILE_PATH = os.path.join(_PROJECT_CONFIG_PATH, "settings.json")
 _CREDENTIALS_PATH = os.path.join(_WIREGUARD_ROOT ,  "credentials")
 
 #system config paths

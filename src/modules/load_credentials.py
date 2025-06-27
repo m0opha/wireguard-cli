@@ -11,27 +11,37 @@ except ImportError:
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from variables import _CREDENTIALS_PATH
 
+TARGET="peer"
 def loadCredentials():
-    
     credentials_found = {}
 
+    if not os.path.exists(_CREDENTIALS_PATH):
+        return {}
+
     for client in os.listdir(_CREDENTIALS_PATH):
+
+        if  client != "server" and not client.startswith(TARGET):
+            continue
+
         absolute_path = os.path.join(_CREDENTIALS_PATH, client)
 
         privatekey_path = os.path.join(absolute_path, "privatekey")
-        with open(privatekey_path, "r") as f:
+        publickey_path = os.path.join(absolute_path, "publickey")
+
+        with open(privatekey_path, "r", encoding="utf-8") as f:
             privatekey = f.read()
 
-        publickey_path = os.path.join(absolute_path, "publickey")
-        with open(publickey_path , "r") as f:
+        with open(publickey_path, "r", encoding="utf-8") as f:
             publickey = f.read()
 
         credentials_found[client] = {
-                "privatekey" : privatekey,
-                "publickey" : publickey
-            }
+            "privatekey": privatekey,
+            "publickey": publickey
+        }
 
-    return credentials_found
+
+    return dict(sorted(credentials_found.items(), reverse=False))
+
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1:

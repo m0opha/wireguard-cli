@@ -13,8 +13,6 @@ from variables import _CREDENTIALS_PATH
 
 def generateCredentials(output_path=None):
 
-
-
     WG_BINARY = getBinaryPath("wg")[0]
     privatekey = subprocess.run(
         [WG_BINARY, "genkey"],
