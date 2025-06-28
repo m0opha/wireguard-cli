@@ -10,7 +10,7 @@ from .modules import (
     wireguradGenerateConfig,
     downWireguard,
     upWireguard,
-    credentialsGenerator,  # ✅ IMPORTANTE: asegúrate que esté en modules
+    credentialsGenerator,
 )
 
 from vars import _CREDENTIALS_PATH
