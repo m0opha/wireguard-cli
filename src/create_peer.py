@@ -13,7 +13,7 @@ from .modules import (
     credentialsGenerator,
 )
 
-from vars import _CREDENTIALS_PATH
+from .vars import _CREDENTIALS_PATH
 
 
 def getNextAvailablePeerNumber():
