@@ -10,7 +10,7 @@ from .modules import (
     upWireguard
 )
 
-from vars import _CREDENTIALS_PATH
+from .vars import _CREDENTIALS_PATH
 
 def deletePeer(name):
     peer_path = os.path.join(_CREDENTIALS_PATH, name)
