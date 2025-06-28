@@ -7,7 +7,7 @@ try:
 except ImportError:
     from modules import loadCredentials, wireguradGenerateConfig, loadSettings, downWireguard, upWireguard
 
-from vars import _CREDENTIALS_PATH
+from .vars import _CREDENTIALS_PATH
 
 def blockPeer(name):
     for peer in os.listdir(_CREDENTIALS_PATH):
