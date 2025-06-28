@@ -6,19 +6,21 @@ import re
 
 try:
     from .get_binary_path import getBinaryPath
-
 except ImportError:
     from get_binary_path import getBinaryPath
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from variables import _SYSCTL_CONFIG_FILE_PATH, debug
+from vars import _SYSCTL_CONFIG_FILE_PATH, debug
 
 _TARGET_ARGUMENT = "net.ipv4.ip_forward"
 
 def ipForwardHandler(enable=True,set_config=True):
-    SUDO_BINARY = getBinaryPath("sudo")[0]
-    SYSCTL_BINARY = getBinaryPath("sysctl")[0]
+    SUDO_BINARY = getBinaryPath("sudo")
+    SYSCTL_BINARY = getBinaryPath("sysctl")
 
+    if not os.path.exists(_SYSCTL_CONFIG_FILE_PATH):
+        with open(_SYSCTL_CONFIG_FILE_PATH, "w") as f:
+            pass
+    
     with open(_SYSCTL_CONFIG_FILE_PATH, "r") as f:
         sysctl_configuration = f.read().splitlines()
 
@@ -52,7 +54,7 @@ def ipForwardHandler(enable=True,set_config=True):
 
         print("[+] IP forwarding enabled successfully.")
 
-if __name__ == "__main__":
+if __name__ == "__main__" and debug:
     if len(sys.argv) <= 1:
         print(f"usage: {os.path.basename(__file__)} <enable or disable>")
         sys.exit(0)

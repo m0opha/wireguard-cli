@@ -8,12 +8,12 @@ try:
 except ImportError:
     from get_binary_path import getBinaryPath
     
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from variables import _CREDENTIALS_PATH
+from vars import _CREDENTIALS_PATH
 
-def generateCredentials(output_path=None):
+def credentialsGenerator(output_path=None):
 
-    WG_BINARY = getBinaryPath("wg")[0]
+    WG_BINARY = getBinaryPath("wg")
+
     privatekey = subprocess.run(
         [WG_BINARY, "genkey"],
         capture_output=True,

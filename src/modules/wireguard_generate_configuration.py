@@ -5,23 +5,21 @@ import shutil
 
 try:
     from .load_credentials import loadCredentials
-    from .settings_handler import loadSettings
-    from .generate_credentials import generateCredentials
+    from .credentials_generator import credentialsGenerator
+    from .utils import *
 
 except ImportError:
     from load_credentials import loadCredentials
-    from settings_handler import loadSettings
-    from generate_credentials import generateCredentials
+    from credentials_generator import credentialsGenerator
+    from utils import *
+
+from vars import _CREDENTIALS_PATH, _WIREGUARD_ROOT, debug
 
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from variables import _CREDENTIALS_PATH, _WIREGUARD_ROOT
-
-
-def genServerConfig(config, credentials):
+def serverStruct(config, credentials):
     return [
         "[Interface]",
-        f"Address = {config['range_ip']}/24",
+        f"Address = {config['range_ip']}",
         f"PrivateKey = {credentials['privatekey']}",
         f"ListenPort = {config['listen_port']}",
         f"DNS = {config['dns']}",
@@ -30,7 +28,7 @@ def genServerConfig(config, credentials):
         ""
     ]
 
-def generatePeerConfig(peer, config, credentials , server_publickey):
+def peerStruct(peer, config, credentials , server_publickey):
     
     peer_id = int(peer[4:])
     base_ip = ".".join(config['range_ip'].split(".")[:3])
@@ -54,12 +52,12 @@ def generatePeerConfig(peer, config, credentials , server_publickey):
         f"PublicKey = {server_publickey}",
         f"Endpoint = {remote_ip}",
         f"AllowedIPs = {config['allow_ips']}",
-        f"PersistentKeepalive{config['keep_alive']}",
+        f"PersistentKeepalive = {config['keep_alive']}",
     ]
 
     return server_peer_config, client_config
 
-def savePeerConfig(peer, config):
+def peerSaveConfig(peer, config):
 
     peer_path = os.path.join(_CREDENTIALS_PATH, peer)
     peer_config_path = os.path.join(peer_path, "wg0.conf")
@@ -70,23 +68,22 @@ def savePeerConfig(peer, config):
     with open(peer_config_path, "w") as f:
             f.write("\n".join(config))
 
-def saveServerConfig(config):
+def serverSaveConfig(config):
     server_config_path = os.path.join(_WIREGUARD_ROOT, "wg0.conf")
     with open(server_config_path, 'w') as f:
         f.write("\n".join(config))
 
-def genWireguardConfig(config, credentials):
+def wireguradGenerateConfig(config, credentials):
 
     server_credentials = credentials['server']
-    server_config = genServerConfig(config, server_credentials )
+    server_config = serverStruct(config, server_credentials)
 
     for peer in credentials:
-
         if peer == "server":
             continue
 
         peer_credentials = credentials[peer]
-        server_peer_config, client_config = generatePeerConfig(
+        server_peer_config, client_config = peerStruct(
                                                 peer=peer,
                                                 config=config,
                                                 credentials=peer_credentials, 
@@ -94,12 +91,12 @@ def genWireguardConfig(config, credentials):
                                                 )
         
         server_config.extend(server_peer_config)
-        savePeerConfig(peer, client_config)
+        peerSaveConfig(peer, client_config)
 
-    if saveServerConfig(server_config):
-        print("[+] Configuración generada y guardada correctamente.")
+    if serverSaveConfig(server_config):
+        print("[+] Server wg0.conf build and save successfully.")
 
-if __name__ == "__main__":
+if __name__ == "__main__" and debug:
     if os.path.exists(_CREDENTIALS_PATH):
         shutil.rmtree(_CREDENTIALS_PATH)    
    
@@ -107,10 +104,9 @@ if __name__ == "__main__":
     
     config = loadSettings()
 
-    generateCredentials(os.path.join(_CREDENTIALS_PATH,"server"))
+    credentialsGenerator(os.path.join(_CREDENTIALS_PATH,"server"))
     for index in range(int(config["peers"])):
-        generateCredentials(os.path.join(_CREDENTIALS_PATH,f"peer{index}"))
-
+        credentialsGenerator(os.path.join(_CREDENTIALS_PATH,f"peer{index + 1}"))
 
     credentials = loadCredentials()
 
@@ -127,8 +123,4 @@ if __name__ == "__main__":
         )
     )
     
-
-
-
-    genWireguardConfig(config, credentials)
-
+    WireguardGenerateConfig(config, credentials)

@@ -4,23 +4,25 @@ import sys
 import shutil
 
 try:
-    from .generate_credentials import generateCredentials
+    from .credentials_generator import credentialsGenerator
 except ImportError:
-    from generate_credentials import generateCredentials
+    from credentials_generator import credentialsGenerator
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from variables import _CREDENTIALS_PATH
+from vars import _CREDENTIALS_PATH, debug
 
-TARGET="peer"
-def loadCredentials():
+
+def loadCredentials(target_startwith="peer", exclude_dirs=()):
     credentials_found = {}
 
     if not os.path.exists(_CREDENTIALS_PATH):
         return {}
 
     for client in os.listdir(_CREDENTIALS_PATH):
-
-        if  client != "server" and not client.startswith(TARGET):
+        if (
+            client != "server"
+            and not client.startswith(target_startwith)
+            or any(client.startswith(prefix) for prefix in exclude_dirs)
+        ):
             continue
 
         absolute_path = os.path.join(_CREDENTIALS_PATH, client)
@@ -28,22 +30,33 @@ def loadCredentials():
         privatekey_path = os.path.join(absolute_path, "privatekey")
         publickey_path = os.path.join(absolute_path, "publickey")
 
-        with open(privatekey_path, "r", encoding="utf-8") as f:
-            privatekey = f.read()
+        # ⚠️ Crear las credenciales si faltan
+        if not (os.path.exists(privatekey_path) and os.path.exists(publickey_path)):
+            if debug:
+                print(f"[!] Missing credentials for {client}, generating...")
+            credentialsGenerator(absolute_path)
 
-        with open(publickey_path, "r", encoding="utf-8") as f:
-            publickey = f.read()
+        try:
+            with open(privatekey_path, "r", encoding="utf-8") as f:
+                privatekey = f.read().strip()
 
-        credentials_found[client] = {
-            "privatekey": privatekey,
-            "publickey": publickey
-        }
+            with open(publickey_path, "r", encoding="utf-8") as f:
+                publickey = f.read().strip()
+
+            credentials_found[client] = {
+                "privatekey": privatekey,
+                "publickey": publickey
+            }
+
+        except Exception as e:
+            if debug:
+                print(f"[!] Failed to load credentials for {client}: {e}")
+            continue
+
+    return dict(sorted(credentials_found.items()))
 
 
-    return dict(sorted(credentials_found.items(), reverse=False))
-
-
-if __name__ == "__main__":
+if __name__ == "__main__" and debug:
     if len(sys.argv) <= 1:
         print(f"usage {os.path.basename(__file__)} <clients>")
         sys.exit()
@@ -59,7 +72,7 @@ if __name__ == "__main__":
 
     for index in range(int(sys.argv[1])):
 
-        generateCredentials(
+        credentialsGenerator(
             os.path.join(_CREDENTIALS_PATH,f"peer{index}")
             )
 

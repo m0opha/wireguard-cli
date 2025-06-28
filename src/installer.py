@@ -3,80 +3,97 @@ import shutil
 import json
 import sys
 
-from .vars.paths import (
-    _server_credentials_path,
-    _wireguard_config_path,
-    _app_config_path
-)
+try:
+    from .modules import *
+    from .interface import install_interface
+    from .vars import _CREDENTIALS_PATH, _WIREGUARD_ROOT
 
-from .modules.generate_wg_configs import generateWgConfigs
-from .modules.generate_credentials import generateCredentials
-from .modules.create_config_directory import createConfigDirectory
-from .modules.check_permissions import checkPermissions
-from .modules.load_credentials import loadCredentials
-from .modules.enable_ipforward import enableIpForward
-from .modules.wireguard_functions import firstStartWireguard
 
-from .interface.initialize_interface import initializeInterface
+except ImportError:
+    from modules import *
+    from interface import install_interface
+    from vars import _CREDENTIALS_PATH, _WIREGUARD_ROOT
+    
+
+def confirm_and_reset_credentials(path: str):
+    if os.path.exists(path):
+        choice = input("[*] Existing credentials will be deleted. Continue? (Y/N): ")
+        if choice.lower().startswith("y"):
+            shutil.rmtree(path)
+            os.mkdir(path)
+            print("[+] Credentials directory has been reset.")
+            return
+
+        print("[-] Installation canceled.")
+        sys.exit(0)
+    else:
+        os.mkdir(_CREDENTIALS_PATH)
+
+def generatePeerCredentials(peers:int):
+    for p in range(peers):
+        credentialsGenerator(os.path.join(_CREDENTIALS_PATH,f"peer{p}"))
+
+import os
+import subprocess
+
+def generateResolvConf():
+    resolv_path = "/etc/resolv.conf"
+
+    # Si no existe o es un enlace roto, intentar regenerarlo
+    if not os.path.exists(resolv_path) or os.path.islink(resolv_path) and not os.path.exists(os.readlink(resolv_path)):
+        print("[*] Attempting to update /etc/resolv.conf using resolvconf...")
+        result = subprocess.run(
+            ["resolvconf", "-u"],
+            capture_output=True,
+            text=True
+        )
+
+        if result.returncode == 0:
+            print("[+] /etc/resolv.conf updated successfully.")
+        else:
+            print("[-] Failed to update /etc/resolv.conf")
+            print(f"stderr: {result.stderr.strip()}")
+
+    else:
+        print("[i] /etc/resolv.conf already exists.")
 
 def installer():
-    # Paso 1: Inicializar configuración de WireGuard
-    wg_config = initializeInterface()
+    #wireguard installation
+    installWireguard()
 
-    # Paso 2: Confirmar eliminación de credenciales previas
-    if os.path.exists(_server_credentials_path):
-        op = input("[*] Se eliminarán las credenciales anteriores. ¿Continuar? (Y/N): ")
-        if op.lower() == "y":
-            shutil.rmtree(_server_credentials_path)
-            os.mkdir(_server_credentials_path)
-        else:
-            print("Instalación cancelada.")
-            sys.exit(0)
+    #enable ip forwarding
+    ipForwardHandler()
 
-    # Paso 3: Crear estructura de carpetas y asegurar permisos
-    createConfigDirectory()
-    checkPermissions(_wireguard_config_path, 0o700)
+    #config dir
+    confirm_and_reset_credentials(_CREDENTIALS_PATH)
 
-    # Paso 4: Guardar configuración en archivo
-    try:
-        os.makedirs(_app_config_path, exist_ok=True)
-        with open(os.path.join(_app_config_path, "configuration.json"), "w") as f:
-            json.dump(wg_config, f, indent=4)
-    except Exception as e:
-        print(f"Error al guardar la configuración: {e}")
-        sys.exit(1)
+    #get config from user
+    config = install_interface()
+    
+    #save settings given
+    saveSettings(config)
+    
+    #create proyect config directory
+    configDirectory()
 
-    # Paso 5: Generar credenciales (servidor + peers)
-    generateCredentials("server")
-    for _peer in range(wg_config["peers"]):
-        generateCredentials(f"peer{_peer + 1}")
+    #set permissions
+    setPermissions(_WIREGUARD_ROOT, 0o700) 
+    
+    #generate credentials
+    generatePeerCredentials(int(config["peers"]))
+    credentialsGenerator(os.path.join(_CREDENTIALS_PATH , "server"))
 
+    #load all credentials
+    all_credentials = loadCredentials()
 
-    # Paso 6: Cargar credenciales generadas
-    try:
-        all_credentials = loadCredentials()
-    except Exception as e:
-        print(f"Error al cargar credenciales: {e}")
-        sys.exit(1)
+    #wireguard gen wg0.conf files
+    wireguradGenerateConfig(config, all_credentials)
 
-    # Paso 7: Generar archivos de configuración
-    try:
-        generateWgConfigs(wg_config, all_credentials)
-    except Exception as e:
-        print(f"Error al generar configuraciones de WireGuard: {e}")
-        sys.exit(1)
+    #enable and start wireguard
+    enableWireguard()
+    upWireguard()
 
-    # Paso 8: Activar IP forwarding
-    enableIpForward()
-
-    # Paso 9: Levantar el servidor wireguard
-    if not firstStartWireguard():
-        print("[!] No se pudo iniciar WireGuard correctamente.")
-        sys.exit(1)
-    else:
-        print("[+] WireGuard está corriendo y listo.")
-
-    print("[+] Instalación completa.")
+    print("[!] installation done.")
 
 if __name__ == "__main__":
     installer()

@@ -3,3 +3,4 @@ binarys/
 *.spec
 **/__pycache__/
 **/*.pyc
+docs/*

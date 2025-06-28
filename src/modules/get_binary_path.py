@@ -19,7 +19,7 @@ def getBinaryPath(target_binary:str) -> dict:
             if item == target_binary:
                 binary_isin.append(os.path.join(absolute_root_path, item))
 
-    return binary_isin
+    return binary_isin[0]
 
 
 if __name__ == "__main__":

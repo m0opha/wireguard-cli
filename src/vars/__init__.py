@@ -8,3 +8,5 @@ from .paths import  (
                     )
 
 from .files_content import settings_content
+
+from .wireguard_required_packages import WIREGUARD_REQUIRED_PACKAGES

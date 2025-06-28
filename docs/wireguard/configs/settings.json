@@ -1,12 +1,12 @@
 {
-  "range_ip": "",
-  "listen_port": "",
-  "remote_ip": "",
-  "post_up": "",
-  "post_down": "",
-  "dns": "",
-  "peers": "3",
-  "interface": "",
-  "allow_ips": "",
-  "keep_alive": ""
+    "range_ip": "10.0.0.1/24",
+    "listen_port": "51820",
+    "remote_ip": "backback.xyz",
+    "interface": "wlan0",
+    "post_up": "iptables -A FORWARD -i wlan0 -j ACCEPT",
+    "post_down": "iptables -D FORWARD -i wlan0 -j ACCEPT",
+    "dns": "1.1.1.1",
+    "peers": "3",
+    "allow_ips": "0.0.0.0/0",
+    "keep_alive": "25"
 }
